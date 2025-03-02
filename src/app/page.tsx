@@ -12,8 +12,6 @@ export default function Home() {
     console.log(pdfFile);
 
     if (!pdfFile) {
-      console.log('aqui');
-
       return toast('File not selected', {
         description: 'Pdf file not selected',
         action: {
@@ -30,8 +28,7 @@ export default function Home() {
       method: 'POST',
       body: formData,
     })
-      .then(response => response.json())
-      .then(data => console.log(data))
+      .then(response => console.log(response))
       .catch(error => console.error(error));
   }
 
