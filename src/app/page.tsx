@@ -2,9 +2,13 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import axios from 'axios';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 export default function Home() {
+  const [epubUrl, setEpubUrl] = useState('');
+
   function submitFile() {
     const files = (document.getElementById('inputFile') as HTMLInputElement).files;
     const pdfFile = files && files[0];
@@ -24,12 +28,10 @@ export default function Home() {
     const formData = new FormData();
     formData.append('file', pdfFile);
 
-    fetch('/api/convert', {
-      method: 'POST',
-      body: formData,
-    })
-      .then(response => console.log(response))
-      .catch(error => console.error(error));
+    axios
+      .post('/api/convert', formData)
+      .then(response => setEpubUrl(response.data.filenameSlug))
+      .catch(() => window.alert('Ocorreu um erro ao gerar o seu EPUB'));
   }
 
   return (
@@ -40,11 +42,20 @@ export default function Home() {
         <Input
           type="file"
           id="inputFile"
+          accept=".pdf"
           className="h-full w-full cursor-pointer border-2 border-purple-300 p-2 text-gray-700 focus:border-purple-500 focus:ring-purple-500"
         />
         <Button onClick={submitFile} className="w-full bg-purple-700 text-white hover:bg-purple-800">
           Convert
         </Button>
+        {epubUrl !== '' ? (
+          <a
+            href={`/${epubUrl}.epub`}
+            className="mt-4 inline-block rounded-lg bg-purple-700 px-6 py-3 font-semibold text-white shadow-md transition-all duration-300 hover:bg-purple-800 hover:shadow-lg focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:outline-none"
+          >
+            📥 Baixar EPUB
+          </a>
+        ) : null}
       </div>
     </div>
   );
